@@ -29,6 +29,13 @@ define RTL8723BS_MP_DRIVER_INSTALL_TARGET_CMDS
 	$(HOST_DIR)/sbin/depmod -a -b $(TARGET_DIR) $(LINUX_VERSION_PROBED)
 	$(INSTALL) -D -m 0644 package/rtl8723bs_mp_driver/rtl8723bs_mp.conf \
 		$(TARGET_DIR)/etc/modprobe.d/rtl8723bs_mp.conf
+
+	$(INSTALL) -D -m 0755 package/rtl8723bs_mp_driver/w_start \
+		$(TARGET_DIR)/usr/bin/w_start
+	$(INSTALL) -D -m 0755 package/rtl8723bs_mp_driver/w_stop \
+		$(TARGET_DIR)/usr/bin/w_stop
+	$(INSTALL) -D -m 0755 package/rtl8723bs_mp_driver/w \
+		$(TARGET_DIR)/usr/bin/w
 endef
 
 $(eval $(generic-package))

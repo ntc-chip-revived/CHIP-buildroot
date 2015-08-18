@@ -33,6 +33,7 @@ if [ "$PS1" ]; then
     export INPUTRC=/etc/inputrc
     export DMALLOC_OPTIONS=debug=0x34f47d83,inter=100,log=logfile
 
+    dmesg -n 1
 fi;
 
 # Source configuration files from /etc/profile.d
