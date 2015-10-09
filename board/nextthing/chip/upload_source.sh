@@ -7,4 +7,4 @@ tar czf /tmp/CHIP-buildroot-build${BUILD_NUMBER}.tar.gz ../build || exit $?
 
 s3cmd put --acl-public --no-guess-mime-type /tmp/CHIP-buildroot-build${BUILD_NUMBER}.tar.gz ${S3_DEST_BASE}/${BUILD_NUMBER}/build${BUILD_NUMBER}.tar.gz || exit $?
 
-rm /tmp/CHIP-buildroot-build%(prop:buildnumber)s.tar.gz || exit $?
+rm /tmp/CHIP-buildroot-build${BUILD_NUMBER}.tar.gz || exit $?
