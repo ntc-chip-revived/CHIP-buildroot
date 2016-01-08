@@ -1,0 +1,52 @@
+comment "linux-deb needs a Linux kernel to be built"
+	depends on !BR2_LINUX_KERNEL
+
+config BR2_PACKAGE_LINUX_DEB
+	bool "linux-deb"
+	depends on BR2_LINUX_KERNEL
+	select BR2_PACKAGE_WIRELESS_TOOLS
+	help
+	  The linux-deb package builds a .deb from the linux kernel source.
+
+if BR2_PACKAGE_LINUX_DEB
+choice
+	prompt "Linux deb package maintainer configuration"
+	default BR2_PACKAGE_LINUX_DEB_USE_MAINTAINER_FROM_GITCONFIG
+	help
+	  Select the source of the maintainer name and email address
+
+config BR2_PACKAGE_LINUX_DEB_USE_MAINTAINER_FROM_GITCONFIG
+	bool "Set maintainter using git user.name and user.email"
+
+config BR2_PACKAGE_LINUX_DEB_USE_MAINTAINER_CUSTOM
+	bool "Set maintainer using custom config"
+
+endchoice
+
+config BR2_PACKAGE_LINUX_DEB_MAINTAINER_CUSTOM_NAME
+	string "Maintainer name"
+	depends on BR2_PACKAGE_LINUX_DEB_USE_MAINTAINER_CUSTOM
+
+config BR2_PACKAGE_LINUX_DEB_MAINTAINER_CUSTOM_EMAIL
+	string "Maintainer email"
+	depends on BR2_PACKAGE_LINUX_DEB_USE_MAINTAINER_CUSTOM
+
+choice
+	prompt "Linux deb package LOCALVERSION"
+	default BR2_PACKAGE_LINUX_DEB_USE_USER_AS_LOCALVERSION
+	help
+	  Select the source of LOCALVERSION
+
+config BR2_PACKAGE_LINUX_DEB_USE_USER_AS_LOCALVERSION
+	bool "Set LOCALVERSION from $USER"
+
+config BR2_PACKAGE_LINUX_DEB_USE_CUSTOM_LOCALVERSION
+	bool "Set custom LOCALVERSION"
+
+endchoice
+
+config BR2_PACKAGE_LINUX_DEB_LOCALVERSION_CUSTOM
+	string "Custom LOCALVERSION"
+	depends on BR2_PACKAGE_LINUX_DEB_USE_CUSTOM_LOCALVERSION
+
+endif

@@ -1509,4 +1509,7 @@ if BR2_PACKAGE_BUSYBOX_SHOW_OTHERS
 endif
 endmenu
 
+menu "Debian-ized Packages"
+	source "package/linux-deb/Config.in"
+endmenu
 endmenu
