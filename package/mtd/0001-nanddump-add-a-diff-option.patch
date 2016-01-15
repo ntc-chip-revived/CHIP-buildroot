@@ -1,0 +1,203 @@
+From 383e34fc9145ada7c744586857a30e133d8f4758 Mon Sep 17 00:00:00 2001
+From: Boris Brezillon <boris.brezillon@free-electrons.com>
+Date: Fri, 15 Jan 2016 14:46:05 +0100
+Subject: [PATCH] nanddump: add a --diff option
+
+Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
+---
+ nanddump.c | 85 ++++++++++++++++++++++++++++++++++++++++++++++++++++++--------
+ 1 file changed, 75 insertions(+), 10 deletions(-)
+
+diff --git a/nanddump.c b/nanddump.c
+index 4ee7ed4..f629da4 100644
+--- a/nanddump.c
++++ b/nanddump.c
+@@ -45,6 +45,7 @@ static void display_help(int status)
+ "-a         --forcebinary        Force printing of binary data to tty\n"
+ "-c         --canonicalprint     Print canonical Hex+ASCII dump\n"
+ "-f file    --file=file          Dump to file\n"
++"-d         --diff               Compare the dumped data to a reference file\n"
+ "-l length  --length=length      Length\n"
+ "-n         --noecc              Read without error correction\n"
+ "           --omitoob            Omit OOB data (default)\n"
+@@ -86,6 +87,8 @@ static const char		*mtddev;		// mtd device name
+ static const char		*dumpfile;		// dump file name
+ static bool			quiet = false;		// suppress diagnostic output
+ static bool			canonical = false;	// print nice + ascii
++static bool			diff = false;		// check if the dump is identical
++							// to a reference file
+ static bool			forcebinary = false;	// force printing binary to tty
+ 
+ static enum {
+@@ -101,7 +104,7 @@ static void process_options(int argc, char * const argv[])
+ 
+ 	for (;;) {
+ 		int option_index = 0;
+-		static const char short_options[] = "hs:f:l:opqnca";
++		static const char short_options[] = "hs:f:l:opqncad";
+ 		static const struct option long_options[] = {
+ 			{"version", no_argument, 0, 0},
+ 			{"bb", required_argument, 0, 0},
+@@ -109,6 +112,7 @@ static void process_options(int argc, char * const argv[])
+ 			{"help", no_argument, 0, 'h'},
+ 			{"forcebinary", no_argument, 0, 'a'},
+ 			{"canonicalprint", no_argument, 0, 'c'},
++			{"diff", no_argument, 0, 'd'},
+ 			{"file", required_argument, 0, 'f'},
+ 			{"oob", no_argument, 0, 'o'},
+ 			{"prettyprint", no_argument, 0, 'p'},
+@@ -172,6 +176,9 @@ static void process_options(int argc, char * const argv[])
+ 			case 'a':
+ 				forcebinary = true;
+ 				break;
++			case 'd':
++				diff = true;
++				break;
+ 			case 'c':
+ 				canonical = true;
+ 			case 'p':
+@@ -212,6 +219,11 @@ static void process_options(int argc, char * const argv[])
+ 		exit(EXIT_FAILURE);
+ 	}
+ 
++	if (diff && !dumpfile) {
++		fprintf(stderr, "The diff mode requires a reference file.\n");
++		exit(EXIT_FAILURE);
++	}
++
+ 	if ((argc - optind) != 1 || error)
+ 		display_help(EXIT_FAILURE);
+ 
+@@ -293,6 +305,27 @@ nil:
+ 	linebuf[lx++] = '\0';
+ }
+ 
++static int cmp(const void *a, const void *b, size_t size)
++{
++	const uint8_t *aptr = a, *bptr = b;
++	size_t i, nbitflips = 0;
++	uint8_t res;
++
++	for (i = 0; i < size; i++) {
++		int j;
++
++		/* XOR the 2 bytes ... */
++		res = aptr[i] ^ bptr[i];
++
++		/*... and count the number of 1s  */
++		for (j = 0; j < 8; j++) {
++			if (res & (1 << j))
++				nbitflips++;
++		}
++	}
++
++	return nbitflips;
++}
+ 
+ /*
+  * Main program
+@@ -306,8 +339,9 @@ int main(int argc, char * const argv[])
+ 	char pretty_buf[PRETTY_BUF_LEN];
+ 	int firstblock = 1;
+ 	struct mtd_ecc_stats stat1, stat2;
+-	bool eccstats = false;
++	bool eccstats = false, stoploop = false;
+ 	unsigned char *readbuf = NULL, *oobbuf = NULL;
++	unsigned char *refbuf = NULL;
+ 	libmtd_t mtd_desc;
+ 
+ 	process_options(argc, argv);
+@@ -330,6 +364,7 @@ int main(int argc, char * const argv[])
+ 	/* Allocate buffers */
+ 	oobbuf = xmalloc(sizeof(oobbuf) * mtd.oob_size);
+ 	readbuf = xmalloc(sizeof(readbuf) * mtd.min_io_size);
++	refbuf = xmalloc(sizeof(readbuf) * (mtd.min_io_size + mtd.oob_size));
+ 
+ 	if (noecc)  {
+ 		if (ioctl(fd, MTDFILEMODE, MTD_FILE_MODE_RAW) != 0) {
+@@ -354,9 +389,15 @@ int main(int argc, char * const argv[])
+ 	 * output. */
+ 	if (!dumpfile) {
+ 		ofd = STDOUT_FILENO;
+-	} else if ((ofd = open(dumpfile, O_WRONLY | O_TRUNC | O_CREAT, 0644))== -1) {
+-		perror(dumpfile);
+-		goto closeall;
++	} else {
++		if (diff)
++			ofd = open(dumpfile, O_RDONLY);
++		else
++			ofd = open(dumpfile, O_WRONLY | O_TRUNC | O_CREAT, 0644);
++		if (ofd == -1) {
++			perror(dumpfile);
++			goto closeall;
++		}
+ 	}
+ 
+ 	if (!pretty_print && !forcebinary && isatty(ofd)) {
+@@ -389,7 +430,9 @@ int main(int argc, char * const argv[])
+ 	}
+ 
+ 	/* Dump the flash contents */
+-	for (ofs = start_addr; ofs < end_addr; ofs += bs) {
++	for (ofs = start_addr; ofs < end_addr && !stoploop; ofs += bs) {
++		int nbitflips = 0;
++
+ 		/* Check for bad block */
+ 		if (bb_method == dumpbad) {
+ 			badblock = 0;
+@@ -439,17 +482,26 @@ int main(int argc, char * const argv[])
+ 		}
+ 
+ 		/* Write out page data */
+-		if (pretty_print) {
++		if (!diff && pretty_print) {
+ 			for (i = 0; i < bs; i += PRETTY_ROW_SIZE) {
+ 				pretty_dump_to_buffer(readbuf + i, PRETTY_ROW_SIZE,
+ 						pretty_buf, PRETTY_BUF_LEN, true, canonical, ofs + i);
+ 				write(ofd, pretty_buf, strlen(pretty_buf));
+ 			}
+-		} else
++		} else if (!diff) {
+ 			write(ofd, readbuf, bs);
++		} else {
++			size_t cnt = read(ofd, refbuf, bs);
++
++			nbitflips += cmp(refbuf, readbuf, cnt);
++			if (cnt != bs) {
++				stoploop = true;
++				goto print_bitflips;
++			}
++		}
+ 
+ 		if (omitoob)
+-			continue;
++			goto print_bitflips;
+ 
+ 		if (badblock) {
+ 			memset(oobbuf, 0xff, mtd.oob_size);
+@@ -468,8 +520,21 @@ int main(int argc, char * const argv[])
+ 						pretty_buf, PRETTY_BUF_LEN, false, canonical, 0);
+ 				write(ofd, pretty_buf, strlen(pretty_buf));
+ 			}
+-		} else
++		} else if (!diff) {
+ 			write(ofd, oobbuf, mtd.oob_size);
++		} else {
++			size_t cnt = read(ofd, refbuf, mtd.oob_size);
++
++			nbitflips += cmp(refbuf, oobbuf, cnt);
++			if (cnt != mtd.oob_size)
++				stoploop = true;
++		}
++
++print_bitflips:
++		if (diff && nbitflips) {
++			fprintf(stderr, "%d different bits at offset 0x%08llx\n",
++				nbitflips, ofs);
++		}
+ 	}
+ 
+ 	/* Close the output file and MTD device, free memory */
+-- 
+2.1.4
+
