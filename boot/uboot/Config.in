@@ -368,4 +368,9 @@ config BR2_TARGET_UBOOT_ENVIMAGE_REDUNDANT
 
 endif # BR2_TARGET_UBOOT_ENVIMAGE
 
+config BR2_TARGET_UBOOT_EXTRA_MAKE_OPTS
+	string "Extra make options"
+	help
+	  Pass some extra environment variable when building uboot.
+
 endif # BR2_TARGET_UBOOT

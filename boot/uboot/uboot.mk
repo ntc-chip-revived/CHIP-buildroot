@@ -76,9 +76,11 @@ endif
 
 UBOOT_ARCH = $(KERNEL_ARCH)
 
+UBOOT_EXTRA_MAKE_OPTS = $(call qstrip,$(BR2_TARGET_UBOOT_EXTRA_MAKE_OPTS))
 UBOOT_MAKE_OPTS += \
 	CROSS_COMPILE="$(CCACHE) $(TARGET_CROSS)" \
-	ARCH=$(UBOOT_ARCH)
+	ARCH=$(UBOOT_ARCH) \
+	$(UBOOT_EXTRA_MAKE_OPTS)
 
 # Helper function to fill the U-Boot config.h file.
 # Argument 1: option name
