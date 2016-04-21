@@ -1,0 +1,51 @@
+From cfb3596a9525d959fc82c2d9992cbc325b559948 Mon Sep 17 00:00:00 2001
+From: Daniel Walter <dwalter@sigma-star.at>
+Date: Fri, 6 Nov 2015 00:00:01 +0100
+Subject: [PATCH 2/5] Include new ioctls and struct in ubi-user.h
+
+Add ioctls and struct definitions for ubi
+statistic interface and PEB read/scrub calls
+
+Signed-off-by: Daniel Walter <dwalter@sigma-star.at>
+Signed-off-by: Richard Weinberger <richard@nod.at>
+---
+ include/mtd/ubi-user.h | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
+
+diff --git a/include/mtd/ubi-user.h b/include/mtd/ubi-user.h
+index 2b50dad..f805d89 100644
+--- a/include/mtd/ubi-user.h
++++ b/include/mtd/ubi-user.h
+@@ -168,6 +168,10 @@
+ /* Re-name volumes */
+ #define UBI_IOCRNVOL _IOW(UBI_IOC_MAGIC, 3, struct ubi_rnvol_req)
+ 
++#define UBI_IOCRPEB _IOW(UBI_IOC_MAGIC, 4, int32_t)
++#define UBI_IOCSPEB _IOW(UBI_IOC_MAGIC, 5, int32_t)
++#define UBI_IOCSTATS _IOW(UBI_IOC_MAGIC, 6, struct ubi_stats_req)
++
+ /* ioctl commands of the UBI control character device */
+ 
+ #define UBI_CTRL_IOC_MAGIC 'o'
+@@ -437,4 +441,18 @@ struct ubi_blkcreate_req {
+ 	int8_t  padding[128];
+ }  __attribute__((packed));
+ 
++struct ubi_stats_entry {
++       int32_t pnum;
++       int32_t ec;
++       int32_t rc;
++       int32_t padding;
++} __attribute__((packed));
++
++struct ubi_stats_req {
++       int32_t req_len;
++       int32_t req_pnum;
++       int32_t padding[2];
++       struct ubi_stats_entry stats[0];
++} __attribute__((packed));
++
+ #endif /* __UBI_USER_H__ */
+-- 
+2.5.0
+
