@@ -156,4 +156,8 @@ config BR2_PACKAGE_MTD_UBIBLOCK
 	bool "ubiblock"
 	default y
 
+config BR2_PACKAGE_MTD_UBIHEALTHD
+	bool "ubihealthd"
+	default y
+
 endif
