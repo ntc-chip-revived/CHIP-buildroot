@@ -126,6 +126,10 @@ main() {
     # O_TRUNC, so 'cp' would unlink it first.
     # Use 'cat' and append-redirection '>>' to save to the final location,
     # since that is the only way we can be 100% sure of the behaviour.
+    if [ -e "${tmpf}.head" ]; then
+        cat "${tmpf}.head" >>"${tmp_output}.head"
+    fi
+
     if ! cat "${tmpf}" >>"${tmp_output}"; then
         rm -rf "${tmpd}" "${tmp_output}"
         exit 1
@@ -136,6 +140,10 @@ main() {
     # that 'mv' is atomic, because it then uses rename() that POSIX mandates
     # to be atomic, see:
     #   http://pubs.opengroup.org/onlinepubs/9699919799/functions/rename.html
+    if [ -e "${tmp_output}.head" ]; then
+        mv -f "${tmp_output}.head" "${output}.head"
+    fi
+
     if ! mv -f "${tmp_output}" "${output}"; then
         rm -f "${tmp_output}"
         exit 1

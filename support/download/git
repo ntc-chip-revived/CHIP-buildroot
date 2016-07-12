@@ -34,7 +34,7 @@ basename="${4}"
 # problems
 git_done=0
 if [ -n "$(${GIT} ls-remote "${repo}" "${cset}" 2>&1)" ]; then
-    printf "Doing shallow clone\n"
+    printf "Doing shallow clone of ${repo} into $(pwd)/${basename}\n"
     if ${GIT} clone ${verbose} --depth 1 -b "${cset}" --bare "${repo}" "${basename}"; then
         git_done=1
     else
@@ -42,11 +42,17 @@ if [ -n "$(${GIT} ls-remote "${repo}" "${cset}" 2>&1)" ]; then
     fi
 fi
 if [ ${git_done} -eq 0 ]; then
-    printf "Doing full clone\n"
+    printf "Doing full clone of ${repo} into $(pwd)/${basename}\n"
     ${GIT} clone ${verbose} --bare "${repo}" "${basename}"
 fi
 
 GIT_DIR="${basename}" \
 ${GIT} archive --prefix="${basename}/" -o "${output}.tmp" --format=tar "${cset}"
 
+GIT_DIR="${basename}" \
+${GIT} log -1 --pretty=oneline
+
 gzip <"${output}.tmp" >"${output}"
+
+GIT_DIR="${basename}" \
+${GIT} log -1 --pretty=oneline > "${output}.head"
