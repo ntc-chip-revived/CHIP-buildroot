@@ -4,9 +4,10 @@
 #
 ################################################################################
 
-MTD_VERSION = 1.5.2
-MTD_SOURCE = mtd-utils-$(MTD_VERSION).tar.bz2
-MTD_SITE = ftp://ftp.infradead.org/pub/mtd-utils
+MTD_VERSION = nextthing/1.5.2/next-mlc
+MTD_REPO_NAME = chip-mtd-utils
+MTD_SITE = https://github.com/nextthingco/$(MTD_REPO_NAME)
+MTD_SITE_METHOD = git
 MTD_LICENSE = GPLv2
 MTD_LICENSE_FILES = COPYING
 
@@ -81,6 +82,7 @@ MTD_TARGETS_UBI_$(BR2_PACKAGE_MTD_UBIATTACH)	+= ubiattach
 MTD_TARGETS_UBI_$(BR2_PACKAGE_MTD_UBICRC32)	+= ubicrc32
 MTD_TARGETS_UBI_$(BR2_PACKAGE_MTD_UBIDETACH)	+= ubidetach
 MTD_TARGETS_UBI_$(BR2_PACKAGE_MTD_UBIFORMAT)	+= ubiformat
+MTD_TARGETS_UBI_$(BR2_PACKAGE_MTD_UBIHEALTHD)	+= ubihealthd
 MTD_TARGETS_UBI_$(BR2_PACKAGE_MTD_UBIMKVOL)	+= ubimkvol
 MTD_TARGETS_UBI_$(BR2_PACKAGE_MTD_UBINFO)	+= ubinfo
 MTD_TARGETS_UBI_$(BR2_PACKAGE_MTD_UBINIZE)	+= ubinize

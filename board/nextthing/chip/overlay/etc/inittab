@@ -23,6 +23,9 @@ null::sysinit:/bin/hostname -F /etc/hostname
 # now run any rc scripts
 ::sysinit:/etc/init.d/rcS
 
+# start ubihealth daemon
+::sysinit:/usr/sbin/ubihealthd -d /dev/ubi0 -f /var/cache/ubihealthd.v1.stats -r 86400 -x 100 -s 864000 &
+
 # Put a getty on the serial port
 ttyS0::respawn:/sbin/getty -L ttyS0 115200 vt100 # GENERIC_SERIAL
 ttyGS0::respawn:/sbin/getty -L ttyGS0 115200 vt100 # gadget serial
