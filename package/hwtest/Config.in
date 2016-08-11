@@ -4,5 +4,8 @@ config BR2_PACKAGE_HWTEST
 	select BR2_PACKAGE_LSHW
 	select BR2_PACKAGE_I2C_TOOLS
 	select BR2_PACKAGE_IW
+	select BR2_PACKAGE_GAWK
+	select BR2_PACKAGE_BASH
+	select BR2_PACKAGE_DIFFUTILS
         help
           Small script to do some hardware tests on CHIP
