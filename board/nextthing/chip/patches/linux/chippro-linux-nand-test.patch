@@ -1,0 +1,83 @@
+diff --git a/arch/arm/boot/dts/sun5i-r8-chip.dts b/arch/arm/boot/dts/sun5i-r8-chip.dts
+index f894cb50..a9a7295 100644
+--- a/arch/arm/boot/dts/sun5i-r8-chip.dts
++++ b/arch/arm/boot/dts/sun5i-r8-chip.dts
+@@ -185,30 +185,71 @@
+ 		allwinner,rb = <0>;
+ 		nand-ecc-mode = "hw";
+ 
+-		spl@0 {
++		spl0@0 {
+ 			label = "SPL";
+ 			reg = /bits/ 64 <0x0 0x400000>;
+ 		};
+ 
+-		spl-backup@400000 {
++		spl1@400000 {
+ 			label = "SPL.backup";
+ 			reg = /bits/ 64 <0x400000 0x400000>;
+ 		};
+ 
+-		u-boot@800000 {
++		u-boot0@800000 {
+ 			label = "U-Boot";
+ 			reg = /bits/ 64 <0x800000 0x400000>;
+ 		};
+ 
+-		env@c00000 {
+-			label = "env";
++		u-boot1@c00000 {
++			label = "U-Boot";
+ 			reg = /bits/ 64 <0xc00000 0x400000>;
+ 		};
+ 
+-		rootfs@1000000 {
++		env0@01000000 {
++			label = "env";
++			reg = /bits/ 64 <0x1000000 0x400000>;
++		};
++
++		env1@01400000 {
++			label = "env";
++			reg = /bits/ 64 <0x1400000 0x400000>;
++		};
++
++		kernel0@01800000 {
++			label = "env";
++			reg = /bits/ 64 <0x1800000 0x400000>;
++		};
++
++		kernel1@01c00000 {
++			label = "env";
++			reg = /bits/ 64 <0x1c00000 0x400000>;
++		};
++
++		initrd0@02000000 {
++			label = "env";
++			reg = /bits/ 64 <0x2000000 0x800000>;
++		};
++
++		initrd1@02800000 {
++			label = "env";
++			reg = /bits/ 64 <0x2800000 0x800000>;
++		};
++
++		rootfs0@03000000 {
+ 			label = "rootfs";
+-			reg = /bits/ 64 <0x1000000 0x1ff000000>;
++			reg = /bits/ 64 <0x03000000 0x04800000>;
+ 		};
++
++		rootfs1@07800000 {
++			label = "rootfs";
++			reg = /bits/ 64 <0x07800000 0x04800000>;
++		};
++
++		user@0c000000 {
++			label = "rootfs";
++			reg = /bits/ 64 <0x0c000000 0x1f4000000>;
++		};
++
+ 	};
+ };
+ 

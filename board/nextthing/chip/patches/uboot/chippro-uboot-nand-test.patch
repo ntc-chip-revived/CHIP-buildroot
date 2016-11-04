@@ -1,0 +1,26 @@
+diff --git a/common/fb_nand.c b/common/fb_nand.c
+index 81243c4..1b9d797 100644
+--- a/common/fb_nand.c
++++ b/common/fb_nand.c
+@@ -131,7 +131,7 @@ static int _fb_nand_write(nand_info_t *nand, struct part_info *part,
+ 	flags |= WITH_DROP_FFS;
+ #endif
+ 
+-	if (!strcmp(part->name, "spl") || !strcmp(part->name, "spl-backup")) {
++	if (!strcmp(part->name, "spl0") || !strcmp(part->name, "spl1")) {
+ 		*written = length;
+ 		return _fb_nand_raw_write(nand, offset, buffer, length);
+ 	}
+diff --git a/include/configs/sunxi-common.h b/include/configs/sunxi-common.h
+index 412d0c7..04915b0 100644
+--- a/include/configs/sunxi-common.h
++++ b/include/configs/sunxi-common.h
+@@ -542,7 +542,7 @@ extern int soft_i2c_gpio_scl;
+ 	BOOTCMD_SUNXI_COMPAT \
+ 	"usbnet_devaddr=de:ad:be:af:00:01\0" \
+ 	"mtdids=nand0=sunxi-nand.0\0" \
+-	"mtdparts=mtdparts=sunxi-nand.0:4m(spl),4m(spl-backup),4m(uboot),4m(env),-(UBI)\0" \
++	"mtdparts=mtdparts=sunxi-nand.0:4m(spl0),4m(spl1),4m(uboot0),4m(uboot1),4m(env0),4m(env1),4m(kernel0),4m(kernel1),8m(initrd0),8m(initrd1),72m(rootfs0),72m(rootfs1),-(user)\0" \
+ 	BOOTENV
+ 
+ #else /* ifndef CONFIG_SPL_BUILD */

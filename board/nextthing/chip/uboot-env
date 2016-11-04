@@ -1,27 +1,30 @@
-# Standard I/O
-stdin=serial
-stdout=serial,vga
-stderr=serial,vga
+baudrate=115200
+boot_kernel=bootz $kernel_addr_r $ramdisk_addr_r $fdt_addr_r
+boot_ubi=run read_kernel; run read_fdt; run read_initrd; run boot_kernel
+bootargs=lpj=5009408 ubi.fm_autoconvert=1 quiet
+bootcmd=fastboot 0; run boot_ubi
+bootdelay=1
+bootm_size=0xa000000
 console=ttyS0,115200
-
-# Load addresses
-bootm_size=0xf000000
+devnum=0
+env_in_ubi=1
+ethact=usb_ether
 fdt_addr_r=0x43000000
+fdtcontroladdr=4bb26508
+fel_booted=1
 kernel_addr_r=0x42000000
-scriptaddr=0x43100000
-pxefile_addr_r=0x43200000
-ramdisk_addr_r=0x43300000
-
-# DT Options
-fdtfile=sun5i-r8-chip.dtb
-
-# NAND Options
+mtddevname=spl
+mtddevnum=0
 mtdids=nand0=sunxi-nand.0
 mtdparts=mtdparts=sunxi-nand.0:4m(spl),4m(spl-backup),4m(uboot),4m(env),-(UBI)
-
-# Default boot options
-bootargs=root=ubi0:rootfs rootfstype=ubifs rw ubi.mtd=4 consoleblank=0
-bootcmd=nand slc-mode on; mtdparts; ubi part UBI; ubifsmount ubi0:rootfs; ubifsload $fdt_addr_r /boot/sun5i-r8-chip.dtb; ubifsload $kernel_addr_r /boot/zImage; bootz $kernel_addr_r - $fdt_addr_r
-
-# Ethernet options
-usbnet_devaddr=de:ad:be:af:00:01
+partition=nand0,0
+pxefile_addr_r=0x43200000
+ramdisk_addr_r=0x43300000
+read_fdt=ubi read $fdt_addr_r fdt
+read_initrd=ubi read $ramdisk_addr_r initrd
+read_kernel=ubi read $kernel_addr_r kernel
+scriptaddr=0x43100000
+serial#=1625428104c2e36a
+stderr=serial
+stdin=serial,usbkbd
+stdout=serial

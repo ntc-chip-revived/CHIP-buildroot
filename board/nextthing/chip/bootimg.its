@@ -1,0 +1,57 @@
+/dts-v1/;
+/ {
+	description = "CHIP Pro Kernel, Ramdisk, FDT";
+	#address-cells = <1>;
+	images {
+		kernel@1 {
+			description = "chip-pro_4.4";
+			data = /incbin/("../../../output/images/zImage");
+			type = "kernel";
+			arch = "arm";
+			os = "linux";
+			compression = "gzip";
+			load = <4200000>;
+			entry = <00000000>;
+			hash@1 {
+				algo = "md5";
+			};
+			hash@2 {
+				algo = "sha1";
+			};
+		};
+		ramdisk@1 {
+			description = "buildroot_hash";
+			data = /incbin/("../../../output/images/rootfs.cpio.gz");
+			type = "ramdisk";
+			arch = "arm";
+			os = "linux";
+			compression = "gzip";
+			load = <4400000>;
+			entry = <00000000>;
+			hash@1 {
+				algo = "sha1";
+			};
+		};
+		fdt@1 {
+			description = "";
+			data = /incbin/("../../../output/images/ntc-gr8-crumb.dtb");
+			type = "flat_dt";
+			arch = "arm";
+			compression = "none";
+			load = <4300000>;
+			entry = <00000000>;
+			hash@1 {
+				algo = "crc32";
+			};
+		};
+	};
+	configurations {
+		default = "config@1";
+		config@1 {
+			description = "boot configuration";
+			kernel = "kernel@1";
+			ramdisk = "ramdisk@1";
+			fdt = "fdt@1";
+		};
+	};
+};
