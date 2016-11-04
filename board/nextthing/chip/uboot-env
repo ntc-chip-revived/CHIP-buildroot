@@ -16,7 +16,7 @@ kernel_addr_r=0x42000000
 mtddevname=spl
 mtddevnum=0
 mtdids=nand0=sunxi-nand.0
-mtdparts=mtdparts=sunxi-nand.0:4m(spl),4m(spl-backup),4m(uboot),4m(env),-(UBI)
+mtdparts=mtdparts=sunxi-nand.0:4m(spl),4m(spl-backup),4m(uboot),4m(env),32m(UBI)
 partition=nand0,0
 pxefile_addr_r=0x43200000
 ramdisk_addr_r=0x43300000

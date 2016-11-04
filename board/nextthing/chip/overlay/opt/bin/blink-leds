@@ -1,0 +1,18 @@
+#!/bin/sh
+for i in $(seq 132 139)
+do
+        echo $i > /sys/class/gpio/export
+        echo out > /sys/class/gpio/gpio$i/direction
+done
+while true; do
+        for i in $(seq 132 139)
+        do
+                echo 0 > /sys/class/gpio/gpio$i/value &
+        done
+        sleep 0.25
+        for i in $(seq 132 139)
+        do
+                echo 1 > /sys/class/gpio/gpio$i/value &
+        done
+        sleep 0.25
+done
