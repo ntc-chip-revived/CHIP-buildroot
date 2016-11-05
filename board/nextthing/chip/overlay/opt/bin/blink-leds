@@ -1,18 +1,38 @@
 #!/bin/sh
+MODE="ascend"
+SPEED=0.125
 for i in $(seq 132 139)
 do
-        echo $i > /sys/class/gpio/export
-        echo out > /sys/class/gpio/gpio$i/direction
+	echo $i > /sys/class/gpio/export
+	echo out > /sys/class/gpio/gpio$i/direction
 done
-while true; do
-        for i in $(seq 132 139)
-        do
-                echo 0 > /sys/class/gpio/gpio$i/value &
+
+if [ $MODE == "all" ]; then
+	while true; do
+		for i in $(seq 132 139)
+		do
+			echo 0 > /sys/class/gpio/gpio$i/value &
+		done
+		sleep $SPEED
+		for i in $(seq 132 139)
+		do
+			echo 1 > /sys/class/gpio/gpio$i/value &
+		done
+		sleep $SPEED
+	done
+else
+	while true; do
+                for i in $(seq 132 139)
+                do
+                        echo 0 > /sys/class/gpio/gpio$i/value &
+			sleep $SPEED
+                done
+                sleep $SPEED
+                for i in $(seq 132 139)
+                do
+                        echo 1 > /sys/class/gpio/gpio$i/value &
+			sleep $SPEED
+                done
+                sleep $SPEED
         done
-        sleep 0.25
-        for i in $(seq 132 139)
-        do
-                echo 1 > /sys/class/gpio/gpio$i/value &
-        done
-        sleep 0.25
-done
+fi

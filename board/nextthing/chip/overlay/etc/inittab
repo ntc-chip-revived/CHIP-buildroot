@@ -20,11 +20,18 @@ null::sysinit:/bin/mkdir -p /dev/pts
 null::sysinit:/bin/mkdir -p /dev/shm
 null::sysinit:/bin/mount -a
 null::sysinit:/bin/hostname -F /etc/hostname
+null::sysinit:/sbin/modprobe sun4i-codec
+null::sysinit:/usr/bin/amixer -c 0 cset numid=6 4 &
+
 null::sysinit:/opt/bin/blink-leds &
+null::sysinit:/opt/bin/fade-pwms 0 0.5 &
+null::sysinit:/opt/bin/fade-pwms 1 1 &
 # now run any rc scripts
 # ::sysinit:/etc/init.d/rcS
 
 ttyS0::respawn:/bin/sh
+ttyS1::respawn:/bin/echo "UART2"
+
 # Put a getty on the serial port
 #ttyS0::respawn:/sbin/getty -L ttyS0 115200 vt100 # GENERIC_SERIAL
 #ttyGS0::respawn:/sbin/getty -L ttyGS0 115200 vt100 # gadget serial

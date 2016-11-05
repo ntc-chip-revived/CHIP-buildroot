@@ -1,0 +1,27 @@
+#!/bin/sh
+PWM=${1:-0}
+SLEEP=${2:-0}
+SPEED=0.0625
+sleep $SLEEP
+echo $PWM > /sys/class/pwm/pwmchip0/export
+echo normal > /sys/class/pwm/pwmchip0/pwm$PWM/polarity
+echo 1 > /sys/class/pwm/pwmchip0/pwm$PWM/enable
+echo 100 > /sys/class/pwm/pwmchip0/pwm$PWM/period
+echo 100 > /sys/class/pwm/pwmchip0/pwm$PWM/duty_cycle
+
+while true; do
+	for percent in $(seq 100 100 1000); do
+		echo $percent > /sys/class/pwm/pwmchip0/pwm$PWM/period
+		sleep $SPEED
+	done
+	sleep $SPEED
+	sleep $SPEED
+	sleep $SPEED
+	for percent in $(seq 1000 -100 100); do
+		echo $percent > /sys/class/pwm/pwmchip0/pwm$PWM/period
+		sleep $SPEED
+	done
+	sleep $SPEED
+	sleep $SPEED
+	sleep $SPEED
+done
