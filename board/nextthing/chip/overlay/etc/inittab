@@ -14,27 +14,32 @@
 # process   == program to run
 
 # Startup the system
+null::sysinit:/bin/stty -F /dev/ttyS1 115200 &
 null::sysinit:/bin/mount -t proc proc /proc
-null::sysinit:/bin/mount -o remount,rw /
-null::sysinit:/bin/mkdir -p /dev/pts
-null::sysinit:/bin/mkdir -p /dev/shm
-null::sysinit:/bin/mount -a
-null::sysinit:/bin/hostname -F /etc/hostname
+null::sysinit:/bin/mount -o remount,rw / &
+null::sysinit:/bin/mkdir -p /dev/pts &
+null::sysinit:/bin/mkdir -p /dev/shm &
+null::sysinit:/bin/mount -a &
+null::sysinit:/bin/hostname -F /etc/hostname &
+null::sysinit:/bin/echo /sbin/mdev > /proc/sys/kernel/hotplug
+null::sysinit:/sbin/mdev -s &
 null::sysinit:/sbin/modprobe sun4i-codec
 null::sysinit:/usr/bin/amixer -c 0 cset numid=6 4 &
-
 null::sysinit:/opt/bin/blink-leds &
 null::sysinit:/opt/bin/fade-pwms 0 0.5 &
 null::sysinit:/opt/bin/fade-pwms 1 1 &
+null::sysinit:/usr/sbin/alsactl restore
+null::sysinit:/usr/bin/speaker-test -c 2 -t sine &
+
 # now run any rc scripts
 # ::sysinit:/etc/init.d/rcS
 
 ttyS0::respawn:/bin/sh
-ttyS1::respawn:/bin/echo "UART2"
+ttyS1::respawn:/usr/bin/arecord -V "stereo" -r 8000 -c 2 -d 10 /dev/null
 
 # Put a getty on the serial port
-#ttyS0::respawn:/sbin/getty -L ttyS0 115200 vt100 # GENERIC_SERIAL
-#ttyGS0::respawn:/sbin/getty -L ttyGS0 115200 vt100 # gadget serial
+# ttyS1::respawn:/sbin/getty -L ttyS1 115200 xterm # GENERIC_SERIAL
+# ttyGS0::respawn:/sbin/getty -L ttyGS0 115200 vt100 # gadget serial
 # tty0::respawn:/sbin/getty -L tty0 115200 vt100 # framebuffer console
 
 # Stuff to do for the 3-finger salute

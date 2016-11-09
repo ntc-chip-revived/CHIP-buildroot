@@ -10,14 +10,14 @@ echo 100 > /sys/class/pwm/pwmchip0/pwm$PWM/period
 echo 100 > /sys/class/pwm/pwmchip0/pwm$PWM/duty_cycle
 
 while true; do
-	for percent in $(seq 100 100 1000); do
+	for percent in $(seq 100 200 1100); do
 		echo $percent > /sys/class/pwm/pwmchip0/pwm$PWM/period
 		sleep $SPEED
 	done
 	sleep $SPEED
 	sleep $SPEED
 	sleep $SPEED
-	for percent in $(seq 1000 -100 100); do
+	for percent in $(seq 1100 -200 100); do
 		echo $percent > /sys/class/pwm/pwmchip0/pwm$PWM/period
 		sleep $SPEED
 	done
