@@ -1,8 +1,17 @@
 config BR2_PACKAGE_HWTEST
-        bool "hwtest"
+	bool "hwtest"
 	select BR2_PACKAGE_STRESS
 	select BR2_PACKAGE_LSHW
 	select BR2_PACKAGE_I2C_TOOLS
 	select BR2_PACKAGE_IW
-        help
-          Small script to do some hardware tests on CHIP
+	help
+		Small script to do some hardware tests on CHIP
+
+if BR2_PACKAGE_HWTEST
+
+config BR2_PACKAGE_HWTEST_ON_BOOT
+	bool "Run hwtest on boot"
+	help
+		Install boot script to run hwtest on boot, poweroff if failed
+
+endif

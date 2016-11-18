@@ -32,4 +32,10 @@ define HWTEST_INSTALL_TARGET_CMDS
 	$(INSTALL) -D -m 0644 $(HWTEST_DIR)/chip-hwtest/lib/hwtest/wifi_ref0.txt $(TARGET_DIR)/usr/lib/hwtest/wifi_ref0.txt
 endef
 
+ifeq ($(BR2_PACKAGE_HWTEST_ON_BOOT),y)
+define HWTEST_INSTALL_INIT_SYSV
+	$(INSTALL) -m 0755 -D $(HWTEST_DIR)/chip-hwtest/S99hwtest $(TARGET_DIR)/etc/init.d/S99hwtest
+endef
+endif
+
 $(eval $(generic-package))
