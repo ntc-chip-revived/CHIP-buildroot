@@ -1,0 +1,29 @@
+#!/bin/sh
+
+DNSMASQ_VARIANT=dnsmasq-wlan0
+DNSMASQ_EXECUTABLE=/usr/sbin/dnsmasq
+DNSMASQ_CONFIG="/etc/${DNSMASQ_VARIANT}.conf"
+
+[ -x "${DNSMASQ_EXECUTABLE}" ] || ( echo "error config file \"${DNSMASQ_CONFIG}\" not found" && exit 0 )
+[ -f "${DNSMASQ_CONFIG}" ] || ( echo "error config file \"${DNSMASQ_CONFIG}\" not found" && exit 0 )
+
+case "$1" in
+	start)
+		echo -n "Starting ${DNSMASQ_VARIANT} ... "
+		start-stop-daemon -S -q -m -b -p "/var/run/${DNSMASQ_VARIANT}.pid" --exec "${DNSMASQ_EXECUTABLE}" -- -C "${DNSMASQ_CONFIG}"
+		echo "done."
+		;;
+	stop)
+		echo -n "Stopping ${DNSMASQ_VARIANT} ..."
+		start-stop-daemon -K -q -p "/var/run/${DNSMASQ_VARIANT}.pid"
+		echo "done."
+		;;
+	restart)
+		$0 stop
+		sleep 1
+		$0 start
+		;;
+	*)
+		echo "usage: $0 {start|stop|restart}"
+		;;
+esac
