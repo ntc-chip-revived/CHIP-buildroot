@@ -1,0 +1,9 @@
+config BR2_PACKAGE_FCCTUI
+	bool "fcctui Radio Test Tool"
+	select BR2_PACKAGE_IW
+	select BR2_PACKAGE_NCURSES
+	select BR2_PACKAGE_SCREEN
+	select BR2_PACKAGE_STRESS
+	select BR2_PACKAGE_WIRELESS_TOOLS
+	help
+		Scripts for FCC Radio Tests

@@ -1,0 +1,21 @@
+#!/bin/sh
+
+case "$1" in
+	start)
+		echo -n "Starting em_test: "
+		/bin/em_test onboot
+		echo "done."
+		;;
+	stop)
+		echo -n "Stopping em_test: "
+		echo "done."
+		;;
+	restart)
+		$0 stop
+		sleep 1
+		$0 start
+		;;
+	*)
+		echo "usage: $0 {start|stop|restart}"
+		;;
+esac

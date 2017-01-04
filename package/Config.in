@@ -5,6 +5,7 @@ menu "Target packages"
 
 menu "CHIP specific"
 	source "package/hwtest/Config.in"
+	source "package/fcctui/Config.in"
 endmenu
 
 menu "Audio and video applications"
