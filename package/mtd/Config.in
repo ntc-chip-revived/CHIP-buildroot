@@ -5,6 +5,9 @@ config BR2_PACKAGE_MTD
 
 	  http://www.linux-mtd.infradead.org/
 
+comment "conflicts with CHIP MTD utils"
+	depends on BR2_PACKAGE_CHIP_MTD_UTILS
+
 if BR2_PACKAGE_MTD
 comment "MTD tools selection"
 
